@@ -1,0 +1,47 @@
+name: Flujo - Solicitud de Mejora
+
+on:
+  issues:
+    types: [opened, labeled]
+  workflow_dispatch:
+    inputs:
+      descripcion:
+        description: "Descripción de la mejora"
+        required: true
+
+jobs:
+  procesar-mejora:
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'issues' && contains(github.event.issue.labels.*.name, 'mejora'))
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Registrar solicitud de mejora
+        run: |
+          echo "========================================="
+          echo "  SOLICITUD DE MEJORA - SKY App v2.0"
+          echo "========================================="
+          if [ "${{ github.event_name }}" = "issues" ]; then
+            echo "Issue: #${{ github.event.issue.number }}"
+            echo "Título: ${{ github.event.issue.title }}"
+            echo "Reportado por: ${{ github.event.issue.user.login }}"
+          else
+            echo "Descripción: ${{ inputs.descripcion }}"
+          fi
+          echo ""
+          echo "Flujo DevOps:"
+          echo "  1. Atención al cliente reporta la mejora"
+          echo "  2. Desarrolladores evalúan y crean branch"
+          echo "  3. CI ejecuta pruebas automáticas"
+          echo "  4. IT despliega en AWS tras aprobación"
+          echo "✅ Mejora registrada en el pipeline"
+
+      - name: Ejecutar pruebas de regresión
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: |
+          pip install -r requirements.txt
+          pytest sky_app/pruebas/ -v --tb=short

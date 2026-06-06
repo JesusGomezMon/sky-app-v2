@@ -1,0 +1,30 @@
+name: CI - Pruebas y Validación
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      - name: Ejecutar pruebas
+        run: pytest sky_app/pruebas/ -v
+
+      - name: Validar que la app inicia
+        run: |
+          python sky_app/app.py &
+          sleep 3
+          curl -f http://localhost:5000/api/monitoreo/health

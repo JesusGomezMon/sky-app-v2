@@ -1,0 +1,45 @@
+name: Flujo - Modificar Cliente Existente
+
+on:
+  workflow_dispatch:
+    inputs:
+      id_cliente:
+        description: "ID del cliente"
+        required: true
+      campo:
+        description: "Campo a modificar (nombre/direccion/telefono/correo)"
+        required: true
+      valor:
+        description: "Nuevo valor"
+        required: true
+  issues:
+    types: [opened]
+
+jobs:
+  modificar-cliente:
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'issues' && contains(github.event.issue.labels.*.name, 'modificar-cliente'))
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+
+      - name: Modificar cliente
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          python -c "
+          from sky_app.microservicios.gestion_clientes import GestionClientes
+          ms = GestionClientes()
+          datos = {'${{ inputs.campo }}': '${{ inputs.valor }}'}
+          r = ms.actualizar_cliente('${{ inputs.id_cliente }}', **datos)
+          print('Resultado:', r)
+          "
+
+      - name: Notificar desde issue
+        if: github.event_name == 'issues'
+        run: |
+          echo "Solicitud de modificación recibida en issue #${{ github.event.issue.number }}"

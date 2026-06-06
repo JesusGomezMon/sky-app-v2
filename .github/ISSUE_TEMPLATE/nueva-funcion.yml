@@ -1,0 +1,17 @@
+name: Nueva Función
+description: Solicitar una nueva funcionalidad (Atención al Cliente / IT)
+title: "[Nueva Función] "
+labels: ["nueva-funcion"]
+body:
+  - type: input
+    id: funcion
+    attributes:
+      label: Nombre de la función
+    validations:
+      required: true
+  - type: textarea
+    id: descripcion
+    attributes:
+      label: Descripción detallada
+    validations:
+      required: true

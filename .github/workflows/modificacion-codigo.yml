@@ -1,0 +1,45 @@
+name: Flujo - Modificación de Código
+
+on:
+  push:
+    branches: [develop, feature/**]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  validar-codigo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      - name: Ejecutar pruebas completas
+        run: pytest sky_app/pruebas/ -v
+
+      - name: Verificar integridad de microservicios
+        run: |
+          python -c "
+          from sky_app.microservicios.gestion_clientes import GestionClientes
+          from sky_app.microservicios.gestion_servicios import GestionServicios
+          from sky_app.microservicios.consultas import Consultas
+          from sky_app.microservicios.respaldos import Respaldos
+          from sky_app.microservicios.monitoreo import Monitoreo
+          print('✅ Todos los microservicios cargados correctamente')
+          "
+
+      - name: Reporte de modificación
+        run: |
+          echo "========================================="
+          echo "  MODIFICACIÓN DE CÓDIGO DETECTADA"
+          echo "========================================="
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Autor: ${{ github.actor }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "✅ Código validado - listo para revisión/revisión de PR"

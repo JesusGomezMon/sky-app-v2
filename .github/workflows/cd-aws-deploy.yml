@@ -1,0 +1,45 @@
+name: CD - Despliegue a AWS EC2
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  desplegar:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ejecutar pruebas pre-despliegue
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: |
+          pip install -r requirements.txt
+          pytest sky_app/pruebas/ -v
+
+      - name: Preparar paquete de despliegue
+        run: |
+          tar czf sky-app-deploy.tar.gz sky_app/ requirements.txt deploy/
+          echo "Paquete creado: sky-app-deploy.tar.gz"
+
+      - name: Desplegar a EC2 (requiere secrets configurados)
+        if: env.EC2_HOST != ''
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+        run: |
+          echo "Para activar despliegue automático, configura estos secrets en GitHub:"
+          echo "  EC2_HOST, EC2_USER, EC2_SSH_KEY"
+          echo ""
+          echo "Despliegue manual: ejecuta deploy/deploy.sh en la instancia EC2"
+
+      - name: Notificar despliegue
+        run: |
+          echo "✅ Build exitoso - Versión lista para AWS EC2"
+          echo "Commit: ${{ github.sha }}"
+          echo "Tag: ${{ github.ref_name }}"

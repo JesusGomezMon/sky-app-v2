@@ -1,0 +1,39 @@
+name: Flujo - Consulta de Información
+
+on:
+  workflow_dispatch:
+    inputs:
+      id_cliente:
+        description: "ID del cliente a consultar"
+        required: true
+  issues:
+    types: [opened]
+
+jobs:
+  consultar-cliente:
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'issues' && contains(github.event.issue.labels.*.name, 'consulta-cliente'))
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+
+      - name: Consultar cliente
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          python -c "
+          from sky_app.microservicios.consultas import Consultas
+          ms = Consultas()
+          r = ms.consultar_cliente('${{ inputs.id_cliente }}')
+          print('Información del cliente:', r)
+          "
+
+      - name: Procesar consulta desde issue
+        if: github.event_name == 'issues'
+        run: |
+          echo "Consulta recibida - Issue #${{ github.event.issue.number }}"
+          echo "Atención al cliente puede consultar vía API: GET /api/consultas/{id}"

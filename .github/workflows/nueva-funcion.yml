@@ -1,0 +1,50 @@
+name: Flujo - Solicitud de Nueva Función
+
+on:
+  issues:
+    types: [opened, labeled]
+  workflow_dispatch:
+    inputs:
+      funcion:
+        description: "Nombre de la nueva función"
+        required: true
+      descripcion:
+        description: "Descripción detallada"
+        required: true
+
+jobs:
+  evaluar-funcion:
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'issues' && contains(github.event.issue.labels.*.name, 'nueva-funcion'))
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Registrar nueva función solicitada
+        run: |
+          echo "========================================="
+          echo "  SOLICITUD DE NUEVA FUNCIÓN"
+          echo "========================================="
+          if [ "${{ github.event_name }}" = "issues" ]; then
+            echo "Issue: #${{ github.event.issue.number }}"
+            echo "Título: ${{ github.event.issue.title }}"
+            echo "Solicitante: ${{ github.event.issue.user.login }}"
+          else
+            echo "Función: ${{ inputs.funcion }}"
+            echo "Descripción: ${{ inputs.descripcion }}"
+          fi
+          echo ""
+          echo "Roles DevOps involucrados:"
+          echo "  - Desarrollador 1: Diseño e implementación"
+          echo "  - Desarrollador 2: Pruebas automatizadas"
+          echo "  - IT: Despliegue en EC2"
+          echo "  - Atención al cliente: Validación"
+          echo "✅ Solicitud registrada en el backlog"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: |
+          pip install -r requirements.txt
+          pytest sky_app/pruebas/ -v --tb=short

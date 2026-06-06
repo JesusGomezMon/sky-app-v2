@@ -1,0 +1,37 @@
+name: Nuevo Cliente
+description: Solicitud de registro de un nuevo cliente (Atención al Cliente)
+title: "[Nuevo Cliente] "
+labels: ["nuevo-cliente", "atencion-cliente"]
+body:
+  - type: input
+    id: nombre
+    attributes:
+      label: Nombre completo
+      placeholder: "Juan Pérez García"
+    validations:
+      required: true
+  - type: input
+    id: direccion
+    attributes:
+      label: Dirección
+    validations:
+      required: true
+  - type: input
+    id: telefono
+    attributes:
+      label: Teléfono
+    validations:
+      required: true
+  - type: input
+    id: correo
+    attributes:
+      label: Correo electrónico
+    validations:
+      required: true
+  - type: dropdown
+    id: tipo
+    attributes:
+      label: Tipo de cliente
+      options:
+        - residencial
+        - empresarial

@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.env
+*.log
+sky_app/clientes/*.json
+sky_app/backups/
+.pytest_cache/
+.idea/
+.vscode/

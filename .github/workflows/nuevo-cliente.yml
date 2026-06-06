@@ -1,0 +1,58 @@
+name: Flujo - Creación de Nuevo Cliente
+
+on:
+  workflow_dispatch:
+    inputs:
+      nombre:
+        description: "Nombre del cliente"
+        required: true
+      direccion:
+        description: "Dirección"
+        required: true
+      telefono:
+        description: "Teléfono"
+        required: true
+      correo:
+        description: "Correo electrónico"
+        required: true
+      tipo_cliente:
+        description: "Tipo (residencial/empresarial)"
+        required: false
+        default: "residencial"
+  issues:
+    types: [opened]
+    # Activar con label 'nuevo-cliente' en el issue
+
+jobs:
+  registrar-cliente:
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'issues' && contains(github.event.issue.labels.*.name, 'nuevo-cliente'))
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - run: pip install -r requirements.txt
+
+      - name: Registrar nuevo cliente
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          python -c "
+          from sky_app.microservicios.gestion_clientes import GestionClientes
+          ms = GestionClientes()
+          r = ms.crear_cliente('${{ inputs.nombre }}', '${{ inputs.direccion }}', '${{ inputs.telefono }}', '${{ inputs.correo }}', '${{ inputs.tipo_cliente }}')
+          print('Cliente creado:', r)
+          assert 'cliente' in r
+          "
+
+      - name: Registrar desde issue (Atención al Cliente)
+        if: github.event_name == 'issues'
+        run: |
+          echo "Issue #${{ github.event.issue.number }}: Solicitud de nuevo cliente"
+          echo "Título: ${{ github.event.issue.title }}"
+          echo "Descripción: ${{ github.event.issue.body }}"
+          echo "✅ Flujo activado - El equipo de desarrollo procesará la solicitud"
