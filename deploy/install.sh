@@ -13,9 +13,10 @@ echo "=== Instalando SKY App v2.0 ==="
 sudo dnf install -y git python3 python3-pip
 
 cd /home/ec2-user
-rm -rf sky-app-v2
+sudo rm -rf sky-app-v2
 git clone https://github.com/JesusGomezMon/sky-app-v2.git
 cd sky-app-v2
+sudo chown -R ec2-user:ec2-user /home/ec2-user/sky-app-v2
 
 sudo rm -rf /opt/sky-app
 sudo mkdir -p /opt/sky-app
