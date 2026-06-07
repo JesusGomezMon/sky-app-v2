@@ -75,13 +75,13 @@ pytest sky_app/pruebas/ -v
 
 ## Despliegue AWS EC2
 
-Ver [docs/AWS-DEPLOY.md](docs/AWS-DEPLOY.md) para instrucciones completas.
+Guia completa paso a paso: **[docs/GUIA-AWS-DESDE-CERO.md](docs/GUIA-AWS-DESDE-CERO.md)**
 
-```bash
-ssh -i clave.pem ec2-user@<IP-EC2>
-git clone https://github.com/TU-USUARIO/sky-app-v2.git
-cd sky-app-v2 && sudo bash deploy/deploy.sh
-```
+Resumen rapido:
+1. Crear instancia t2.micro Amazon Linux 2023
+2. Abrir puertos 22 y 80 en Security Group
+3. Pegar `deploy/user-data.sh` en User Data al crear la instancia
+4. Abrir `http://TU-IP/api/monitoreo/health`
 
 ## Subir a GitHub (tu cuenta)
 
