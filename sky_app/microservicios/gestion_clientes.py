@@ -2,7 +2,7 @@
 from typing import List, Optional
 
 from sky_app.dominio.entidades import Cliente
-from sky_app.dominio.value_objects import NombreCliente, Direccion
+from sky_app.dominio.value_objects import NombreCliente, Direccion, CorreoElectronico
 from sky_app.infraestructura.repositorio import RepositorioClientes
 
 
@@ -17,7 +17,7 @@ class GestionClientes:
             nombre=NombreCliente(nombre),
             direccion=Direccion(direccion),
             telefono=telefono,
-            correo=correo,
+            correo=CorreoElectronico(correo).valor,
             tipo_cliente=tipo_cliente,
         )
         self.repo.guardar(cliente)
@@ -50,7 +50,7 @@ class GestionClientes:
         if "telefono" in datos:
             cliente.telefono = datos["telefono"]
         if "correo" in datos:
-            cliente.correo = datos["correo"]
+            cliente.correo = CorreoElectronico(datos["correo"]).valor
         if "tipo_cliente" in datos:
             cliente.tipo_cliente = datos["tipo_cliente"]
         self.repo.actualizar(cliente)
