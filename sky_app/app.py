@@ -145,5 +145,7 @@ def reporte():
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=False)
+    # FALLA SIMULADA: se elimino el arranque del servidor para demostrar recuperacion con Git
+    # port = int(os.environ.get("PORT", 5000))
+    # app.run(host="0.0.0.0", port=port, debug=False)
+    raise RuntimeError("FALLA SIMULADA: aplicacion deshabilitada intencionalmente")
