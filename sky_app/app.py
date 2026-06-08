@@ -73,7 +73,8 @@ def eliminar_cliente(id_cliente):
 @app.route("/api/clientes/buscar", methods=["GET"])
 def buscar_por_nombre():
     nombre = request.args.get("nombre", "")
-    return jsonify(clientes_ms.buscar_cliente(nombre=nombre))
+    correo = request.args.get("correo", "")
+    return jsonify(clientes_ms.buscar_cliente(nombre=nombre or None, correo=correo or None))
 
 
 # --- Gestión de Servicios ---
