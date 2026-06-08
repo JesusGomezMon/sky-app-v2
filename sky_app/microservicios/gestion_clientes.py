@@ -23,16 +23,21 @@ class GestionClientes:
         self.repo.guardar(cliente)
         return {"mensaje": "Cliente registrado", "cliente": cliente.to_dict()}
 
-    def buscar_cliente(self, id_cliente: str = None, nombre: str = None) -> dict:
+    def buscar_cliente(self, id_cliente: str = None, nombre: str = None, correo: str = None) -> dict:
         if id_cliente:
             cliente = self.repo.buscar(id_cliente)
+            if not cliente:
+                return {"error": "Cliente no encontrado"}
+            return {"cliente": cliente.to_dict()}
+        if correo:
+            cliente = self.repo.buscar_por_correo(correo)
             if not cliente:
                 return {"error": "Cliente no encontrado"}
             return {"cliente": cliente.to_dict()}
         if nombre:
             clientes = self.repo.buscar_por_nombre(nombre)
             return {"clientes": [c.to_dict() for c in clientes], "total": len(clientes)}
-        return {"error": "Proporcione id_cliente o nombre"}
+        return {"error": "Proporcione id_cliente, nombre o correo"}
 
     def actualizar_cliente(self, id_cliente: str, **datos) -> dict:
         cliente = self.repo.buscar(id_cliente)
