@@ -2,6 +2,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
+import re
 
 
 class TipoServicioEnum(str, Enum):
@@ -17,6 +18,15 @@ class NombreCliente:
     def __post_init__(self):
         if not self.valor or len(self.valor.strip()) < 2:
             raise ValueError("El nombre debe tener al menos 2 caracteres")
+
+
+@dataclass(frozen=True)
+class CorreoElectronico:
+    valor: str
+
+    def __post_init__(self):
+        if not self.valor or not re.match(r"^[\w\.-]+@[\w\.-]+\.\w+$", self.valor.strip()):
+            raise ValueError("Correo electronico invalido")
 
 
 @dataclass(frozen=True)
