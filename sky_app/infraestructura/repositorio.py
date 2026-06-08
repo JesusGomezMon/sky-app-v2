@@ -44,6 +44,14 @@ class RepositorioClientes:
                     resultados.append(cliente)
         return resultados
 
+    def buscar_por_correo(self, correo: str) -> Optional[Cliente]:
+        for archivo in CLIENTES_DIR.glob("cliente_*.json"):
+            with open(archivo, encoding="utf-8") as f:
+                cliente = Cliente.from_dict(json.load(f))
+                if cliente.correo.lower() == correo.lower():
+                    return cliente
+        return None
+
     def listar_todos(self) -> List[Cliente]:
         clientes = []
         for archivo in sorted(CLIENTES_DIR.glob("cliente_*.json")):

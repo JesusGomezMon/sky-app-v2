@@ -2,7 +2,7 @@
 from typing import List, Optional
 
 from sky_app.dominio.entidades import Cliente
-from sky_app.dominio.value_objects import NombreCliente, Direccion
+from sky_app.dominio.value_objects import NombreCliente, Direccion, CorreoElectronico
 from sky_app.infraestructura.repositorio import RepositorioClientes
 
 
@@ -17,22 +17,27 @@ class GestionClientes:
             nombre=NombreCliente(nombre),
             direccion=Direccion(direccion),
             telefono=telefono,
-            correo=correo,
+            correo=CorreoElectronico(correo).valor,
             tipo_cliente=tipo_cliente,
         )
         self.repo.guardar(cliente)
         return {"mensaje": "Cliente registrado", "cliente": cliente.to_dict()}
 
-    def buscar_cliente(self, id_cliente: str = None, nombre: str = None) -> dict:
+    def buscar_cliente(self, id_cliente: str = None, nombre: str = None, correo: str = None) -> dict:
         if id_cliente:
             cliente = self.repo.buscar(id_cliente)
+            if not cliente:
+                return {"error": "Cliente no encontrado"}
+            return {"cliente": cliente.to_dict()}
+        if correo:
+            cliente = self.repo.buscar_por_correo(correo)
             if not cliente:
                 return {"error": "Cliente no encontrado"}
             return {"cliente": cliente.to_dict()}
         if nombre:
             clientes = self.repo.buscar_por_nombre(nombre)
             return {"clientes": [c.to_dict() for c in clientes], "total": len(clientes)}
-        return {"error": "Proporcione id_cliente o nombre"}
+        return {"error": "Proporcione id_cliente, nombre o correo"}
 
     def actualizar_cliente(self, id_cliente: str, **datos) -> dict:
         cliente = self.repo.buscar(id_cliente)
@@ -45,7 +50,7 @@ class GestionClientes:
         if "telefono" in datos:
             cliente.telefono = datos["telefono"]
         if "correo" in datos:
-            cliente.correo = datos["correo"]
+            cliente.correo = CorreoElectronico(datos["correo"]).valor
         if "tipo_cliente" in datos:
             cliente.tipo_cliente = datos["tipo_cliente"]
         self.repo.actualizar(cliente)
